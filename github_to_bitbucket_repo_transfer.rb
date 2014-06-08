@@ -58,10 +58,13 @@ end
 
 
 args = {
-    # name of the organization that you want to copy all repos from
-    :github_org => "pocket-gophers-2014",
+    # name of the github organization that you want to copy all repos from
+    :github_org => "",
+
     # your github account personal access token (create on github: settings > applications, and make sure admin:org scope is checked when creating the token)
     :github_token => "",
+
+    # bitbucket account credentials
     :bitbucket_username => "",
     :bitbucket_password => ""
   }
