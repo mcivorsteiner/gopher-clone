@@ -15,12 +15,46 @@ def get_github_org_repo_names(org_name, token)
   repo_names
 end
 
+
+def create_bitbucket_repo(username, password, repo_name)
+  print "\n"*3
+  puts "creating bitbucket repo: #{repo_name}"
+  system "curl --user #{username}:#{password} https://api.bitbucket.org/1.0/repositories/ \
+          --data name=#{repo_name} \
+          --data is_private=true"
+end
+
+def bare_clone_repo(org_name, repo_name)
+  print "\n"*3
+  puts "cloning #{repo_name} to bitbucket"
+  system "git clone --bare git@github.com:#{org_name}/#{repo_name}.git"
+  Dir.chdir "#{repo_name}.git"
+end
+
+def push_clone_to_bitbucket(username, repo_name)
+  print "\n"*3
+  puts "pushing clone of #{repo_name} to bitbucket"
+  system "git push --mirror git@bitbucket.org:#{username}/#{repo_name}.git"
+end
+
+
 # DRIVER CODE
-github_org_name = "pocket-gophers-2014"
+github_org = "pocket-gophers-2014"
 
 # enter your github account personal access token 
 #   > create on github: settings > applications
 #   > make sure admin:org scope is checked when creating the token
 github_token = ""
 
-puts get_github_org_repo_names("pocket-gophers-2014", github_token)
+# enter bitbucket credentials below
+bitbucket_username = ""
+bitbucket_password = ""
+
+
+repo_names = get_github_org_repo_names(github_org, github_token)
+# repo_names = ["phase-2-guide"]
+repo_names.each do |repo|
+  bare_clone_repo(github_org, repo)
+  create_bitbucket_repo(bitbucket_username, bitbucket_password, repo)
+  push_clone_to_bitbucket(bitbucket_username, repo)
+end
