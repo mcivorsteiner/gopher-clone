@@ -15,24 +15,20 @@ def get_github_org_repo_names(org_name, token)
   repo_names
 end
 
-
-def create_bitbucket_repo(username, password, repo_name)
-  print "\n"*3
+def create_bitbucket_repo(repo_name, username, password)
   puts "creating bitbucket repo: #{repo_name}"
   system "curl --user #{username}:#{password} https://api.bitbucket.org/1.0/repositories/ \
           --data name=#{repo_name} \
           --data is_private=true"
 end
 
-def bare_clone_repo(org_name, repo_name)
-  print "\n"*3
+def bare_clone_repo(repo_name, org_name)
   puts "cloning #{repo_name} to bitbucket"
   system "git clone --bare git@github.com:#{org_name}/#{repo_name}.git"
   Dir.chdir "#{repo_name}.git"
 end
 
-def push_clone_to_bitbucket(username, repo_name)
-  print "\n"*3
+def push_clone_to_bitbucket(repo_name, username)
   puts "pushing clone of #{repo_name} to bitbucket"
   system "git push --mirror git@bitbucket.org:#{username}/#{repo_name}.git"
 end
@@ -42,24 +38,38 @@ def delete_local_bare_clone(repo_name)
   system "rm -rf #{repo_name}.git"
 end
 
-# DRIVER CODE
-github_org = "pocket-gophers-2014"
+def copy_github_repo_to_bitbucket(repo_name, args)
+  bare_clone_repo(repo_name, args[:github_org])
+  create_bitbucket_repo(repo_name, args[:bitbucket_username], args[:bitbucket_password])
+  push_clone_to_bitbucket(repo_name, args[:bitbucket_username])
+  delete_local_bare_clone(repo_name)
+end
 
-# enter your github account personal access token 
+
+# DRIVER CODE
+
+# TODO BEFORE RUNNING:
+# - create bitbucket account
+# - need to connect ssh key to bitbucket
+# - create github account personal access token 
 #   > create on github: settings > applications
 #   > make sure admin:org scope is checked when creating the token
-github_token = ""
-
-# enter bitbucket credentials below
-bitbucket_username = ""
-bitbucket_password = ""
+# - fill in the args hash below with your github and bitbucket info
 
 
-repo_names = get_github_org_repo_names(github_org, github_token)
-# repo_names = ["phase-2-guide"]
-repo_names.each do |repo|
-  bare_clone_repo(github_org, repo)
-  create_bitbucket_repo(bitbucket_username, bitbucket_password, repo)
-  push_clone_to_bitbucket(bitbucket_username, repo)
-  delete_local_bare_clone(repo)
+args = {
+    # name of the organization that you want to copy all repos from
+    :github_org => "pocket-gophers-2014",
+    # your github account personal access token (create on github: settings > applications, and make sure admin:org scope is checked when creating the token)
+    :github_token => "",
+    :bitbucket_username => "",
+    :bitbucket_password => ""
+  }
+
+repo_names = get_github_org_repo_names(args[:github_org], args[:github_token])
+
+repo_names.each_with_index do |repo, index|
+  puts "\n\n\nPROCESSING REPO #{index + 1} OF #{repo_names.length}: #{repo}\n\n"
+  copy_github_repo_to_bitbucket(repo, args)
 end
+
