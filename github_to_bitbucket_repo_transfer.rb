@@ -37,6 +37,10 @@ def push_clone_to_bitbucket(username, repo_name)
   system "git push --mirror git@bitbucket.org:#{username}/#{repo_name}.git"
 end
 
+def delete_local_bare_clone(repo_name)
+  Dir.chdir ".."
+  system "rm -rf #{repo_name}.git"
+end
 
 # DRIVER CODE
 github_org = "pocket-gophers-2014"
@@ -57,4 +61,5 @@ repo_names.each do |repo|
   bare_clone_repo(github_org, repo)
   create_bitbucket_repo(bitbucket_username, bitbucket_password, repo)
   push_clone_to_bitbucket(bitbucket_username, repo)
+  delete_local_bare_clone(repo)
 end
