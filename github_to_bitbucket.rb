@@ -45,34 +45,3 @@ def copy_github_repo_to_bitbucket(repo_name, args)
   delete_local_bare_clone(repo_name)
 end
 
-
-# DRIVER CODE
-
-# TODO BEFORE RUNNING:
-# - create bitbucket account
-# - need to connect ssh key to bitbucket
-# - create github account personal access token 
-#   > create on github: settings > applications
-#   > make sure admin:org scope is checked when creating the token
-# - fill in the args hash below with your github and bitbucket info
-
-
-args = {
-    # name of the github organization that you want to copy all repos from
-    :github_org => "",
-
-    # your github account personal access token (create on github: settings > applications, and make sure admin:org scope is checked when creating the token)
-    :github_token => "",
-
-    # bitbucket account credentials
-    :bitbucket_username => "",
-    :bitbucket_password => ""
-  }
-
-repo_names = get_github_org_repo_names(args[:github_org], args[:github_token])
-
-repo_names.each_with_index do |repo, index|
-  puts "\n\n\nPROCESSING REPO #{index + 1} OF #{repo_names.length}: #{repo}\n\n"
-  copy_github_repo_to_bitbucket(repo, args)
-end
-
