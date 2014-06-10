@@ -1,6 +1,6 @@
 # Gopher Clone
 ### DESCRIPTION
-Allows you to transfer all repositories (and their  branches) from a Github organization to a Bitbucket account.  The resulting repos on Bitbucket are private.
+Allows you to copy all repositories (and their  branches) from a Github organization to a Bitbucket account.  The resulting repos on Bitbucket are private.
 
 ### TODO BEFORE RUNNING:
 - Create a <a href="https://bitbucket.org/" target="_blank">Bitbucket Account</a>
